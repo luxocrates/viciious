@@ -1,6 +1,6 @@
 <p align="center"><img src="images/viciious-sleeve.jpg" width="450"></p>
 
-Viciious brings the outstanding capabilities of the Commodore 64 microcomputer to your web browser and terminal emulator.
+Viciious brings the outstanding capabilities of the Commodore 64 microcomputer to your web browser and terminal emulator. [Try it out](https://luxocrates.github.io/viciious/).
 
 <p align="center"><img src="images/collage-normal.gif" width="450"></p>
 
@@ -11,7 +11,7 @@ Viciious brings the outstanding capabilities of the Commodore 64 microcomputer t
 
 ## Quick Start
 
- - Open the `dist/web-prod/viciious.html` file in your web browser.
+- [Run the live demo](https://luxocrates.github.io/viciious/) or open the `dist/web-prod/viciious.html` file in your web browser.
  - Drag-and-drop `.t64`, `.tap`, `.prg` or `.sid` files into the browser window.
  - Your cursor keys and Shift map to a joystick plugged into Control Port 2.
  - What’s written on your keyboard is probably what gets typed in.
