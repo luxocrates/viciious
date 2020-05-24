@@ -1,0 +1,36 @@
+#mapping-intro {
+  margin-bottom: 20px;
+}
+
+#shift8Diagram {
+  display: inline-block;
+  width: 188px;
+  height: 43px;
+  position: relative;
+  top: 10px;
+}
+
+#map_natural {
+  width: 50px;
+  height: 50px;
+}
+
+#map_direct {
+  width: 132px;
+  height: 50px;
+  box-sizing: content-box;
+}
+
+#natural-keymap-tooltip {
+  width: 190px;
+  height: 191px;
+  top: 36px;
+  left: -125px;
+}
+
+#direct-keymap-tooltip {
+  width: 132px;
+  height: 194px;
+  left: 103px;
+  top: 41px;
+}

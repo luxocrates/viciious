@@ -1,0 +1,41 @@
+#loadDialog .tip:first-child {
+  margin-top: 30px;
+  margin-bottom: 60px;
+}
+
+#loadDialog .demoSection {
+  margin-top: 60px;
+  margin-bottom: 60px;
+}
+
+.demoItems {
+  display: grid;
+  grid-template-columns: 180px auto;
+  grid-gap: 10px 20px;
+  margin-bottom: 50px;
+  align-items: baseline;
+}
+
+/* First column */
+.demoItems > div:nth-child(2n+1) {
+  text-align: right;
+}
+
+/* Second column */
+.demoItems > div:nth-child(2n+0) {
+  font-size: 13px;
+}
+
+.demoItems button {
+  background-color: #0984b9;
+  color: white;
+  padding: 8px 7px;
+  border-radius: 5px;
+}
+
+.demoItems button code {
+  background-color: #0984b9;
+  border: 1px solid white;
+  padding: 1px 4px;
+  font-size: 13px;
+}
