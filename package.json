@@ -1,0 +1,29 @@
+{
+  "name": "viciious",
+  "version": "0.1.0",
+  "description": "A Commodore 64 Emulator in JavaScript",
+  "scripts": {
+    "start": "webpack-dev-server --config-name web-dev",
+    "run-web-dev": "webpack-dev-server --config-name web-dev",
+    "run-web-prod": "webpack-dev-server --config-name web-prod",
+    "build-web-dev": "webpack --config-name web-dev",
+    "build-web-prod": "webpack --config-name web-prod",
+    "run-node": "webpack --config-name node-prod && node dist/node/viciious.js",
+    "build-node": "webpack --config-name node-prod",
+    "test-lorenz": "webpack --config-name test-lorenz && node dist/test/lorenz.js"
+  },
+  "author": "Mike Dean (https://github.com/luxocrates)",
+  "license": "Public Domain",
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^3.5.3",
+    "html-webpack-inline-source-plugin": "0.0.10",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "svg-inline-loader": "^0.8.2",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.3"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAgCAYAAACcuBHKAAAACXBIWXMAAAsSAAALEgHS3X78AAAEQElEQVRYheVXT0gjVxj/Mlln3ExGEvSgIBJYW0gu9TZeREv15mGriNVTPCjuRfeg9rKyU5SyqFCUpYgU40mhoG1BKKhQeynmIi5IPLSlRcdjSXBm0tmok/JN54WX50ycdJftYX8QMpNv5n2/9/35fS+BYrEI/ze4d0wgAgCP2R/fJYlIPp9PA0Aba3hQxSJtbrvwC03TeiVJ+tDtcb8k2q6vr385Pj5+mE6nyww9PT0Qj8fta13Xi+vr6wHankgkoLu7274+ODgoXVdLImIYxsH5+fnD8fFxuLq6KnMwMTFhXxuGYQ0NDXGZTKZkb25uhpGREft6bm7OvncjcV9N2HlUVTUyPDx8h8DW1laptUZHR8sI1NXVwerqKkiSBDMzM7C9ve3ppCKJbDb7nWVZH0xNTQVpAuhgbW3NCofDdujRCZ0mtG9ubtppmp+fr0gAKqXDNM1NQRA6BgcHA+wO0UFTUxNHCLBOFhcXbQJYA6lUqiIB8IqEpmkvamtrhxRFCdIEaAeVCHR0dLwGgB/Yd6shkZQk6XMvB6SwVlZWXO19fX0gCMJnAHDii4ELiS4ASG1sbNxxMDk5aTtA7OzswPLycpm9v7+f2LEdvvdLAJiaaCsUCj/u7u7a7cQ6IK2IBKanp+/YFxYW4Pb29jQYDMYAQHE25IYux15CaYDpuv7bxcXFo97e3rL3ZFm2C9GLABYq0QIWR0dHZV2Da7W3t5fuiZAREklMQ2dnJ6iqWvYQagG2Ii6GWvG2QNbmOO7XB04Unu3t7ZURQHUjBM7OzgDV8m0Bo7e0tHTLcdzvoVBIxsKMhcPhR2w/Y44JAVYt3wREZxobGy+QAADkMBJdqPuZTIajo4D5Q2AavHJOgJ1ERxELFddwq4nZ2VlobW39u6am5mMkAE53xE5PT8taFSejYRh/iaL4MplMViSgadpEJpOJsiToTRBgUcbj8Z8B4CkA/El+d5VtDFmhUFBFUVTc7DRubm4eJxKJ6P7+/n2PEhyyQuY5wHieb/axYCQajX5ER+G/AEnkWlpaLPpdzLEoivVO2DxhmubXeJBho+Ck4pVfPkjiECciySECd4azAQC+wmHmHFBpxHRd38MhNzY2FqA7B+vBwWE1JE6y2ewrnA00cDbgWSAQCMzg0QIAitTnD03TPsHWZY97uE4ul9smle8HdmFGo9Gnsiz/hLugBxdqRyqVCtBRgn87AuiWJsAp2tDQ8FoQhClHhf2TwNDl8/lVRVFGVVUNsrtj791ATdFxuv38oLSbUCj0hOO4b1HN7hMnGtjOGAFUWGeMb1RDAOgpSoCFiIeay8tLuy4wCm4tiAMIRW1gYMCqr68v8Dz/hCGgpNPp56xiyrL8hecoZxAzTfNLjuM+5Xm+FmWdqCq2MzlfoqpalvWNJEkvXAqxy+NMcch2jp8/xLhQzPmA4+yE+n5jvJf/yu8CAP4BbeL791fW1r8AAAAASUVORK5CYII=">
+  </head>
+  <style type="text/css">
+
+    body {
+      margin: 0;
+      font-family: "Futura", "Century Gothic", sans-serif;
+    }
+
+    body.shake .tray, body.shake #canvas, body.shake #snapshotsRail, body.shake #scopeRail {
+      animation-name: noise;
+      animation-duration: 0.5s;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes noise {
+      0%   { transform: translateY( 1px); }
+      5%   { transform: translateY( 0px); }
+      10%  { transform: translateY( 2px); }
+      15%  { transform: translateY( 1px); }
+      20%  { transform: translateY( 2px); }
+      25%  { transform: translateY( 1px); }
+      30%  { transform: translateY( 0px); }
+      35%  { transform: translateY( 1px); }
+      40%  { transform: translateY( 2px); }
+      45%  { transform: translateY( 0px); }
+      50%  { transform: translateY(-2px); }
+      55%  { transform: translateY( 0px); }
+      60%  { transform: translateY(-1px); }
+      65%  { transform: translateY( 0px); }
+      70%  { transform: translateY( 1px); }
+      75%  { transform: translateY(-2px); }
+      80%  { transform: translateY(-1px); }
+      85%  { transform: translateY(-2px); }
+      90%  { transform: translateY( 2px); }
+      95%  { transform: translateY( 1px); }
+      100% { transform: translateY(-1px); }
+    }
+
+    #canvas {
+      position: fixed;
+      transition-property: top, left, width, height;
+      transition-duration: 1s;
+      transition-timing-function: cubic-bezier(.12,.99,.38,.95);
+    }
+    
+    #canvas.no-transition {
+      transition-property: none;
+    }
+
+    button {
+      font-family: "Futura", "Century Gothic", sans-serif;
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      padding: 0;
+    }
+
+    #menu {
+      display: none;
+      color: white;
+      font-size: 15px;
+    }
+
+    .menu-flex-container {
+      display: none;
+      text-align: center;
+      color: white;
+      font-size: 15px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      margin: 0;
+    }
+
+    .menu-flex-container > * > * {
+      text-align: left;
+    }
+
+    .menu-flex-container > div:nth-child(1) {
+      min-width: 60px;
+      width: 60px;
+    }
+
+    .menu-flex-container > div:nth-child(2) {
+      flex-grow: 1;
+      max-width: 600px;
+    }
+    
+    .menu-flex-container > div:nth-child(3) {
+      min-width: 60px;
+      width: 60px;
+    }
+
+    #backdrop {
+      background-color: #222;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: -1;
+    }
+
+    .rail {
+      position: fixed;
+      box-sizing: border-box;
+      top: 70px;
+      bottom: 70px;
+      color: white;
+      font-size: 13px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      transition: opacity 0.375s;
+
+      /* Regrettable... */
+      scrollbar-width: none; /* Firefox */
+    }
+
+    .rail.hidden {
+      opacity: 0;
+    }
+
+    .rail::-webkit-scrollbar {
+      display: none;
+    }
+
+  </style>
+  <body>
+    <div id="backdrop" class="_isBackground"></div>
+    <div id="upperTray" class="tray hidden _isBackground">
+      <div class="tray-blanket _isBackground"></div>
+      <div class="tray-flex _isBackground">
+        <div><button id="aboutButton" class="iconButton"><%= require("./images/svg_viciious-logo.svg")%></button></div>
+        <div></div>
+        <div>
+          <button id="resetButton" class="iconButton"><%= require("./images/svg_icon-power.svg")%></button>
+        </div>
+      </div>
+    </div>
+    <div id="lowerTray" class="tray hidden _isBackground">
+      <div class="tray-blanket _isBackground"></div>
+      <div class="tray-flex _isBackground">
+        <div>
+          <button id="joystickButton" class="iconButton"><%= require("./images/svg_icon-joystick.svg")%></button><button id="keymapButton" class="iconButton"><%= require("./images/svg_icon-key.svg")%></button><button id="loadButton" class="iconButton"><%= require("./images/svg_icon-tape.svg")%></button>
+        </div>
+        <div></div>
+        <div>
+          <button id="unmuteButton" class="iconButton"><%= require("./images/svg_icon-unmute.svg")%></button><button id="muteButton" class="iconButton"><%= require("./images/svg_icon-mute.svg")%></button><button id="recordButton" class="iconButton"><%= require("./images/svg_icon-record.svg")%></button><button id="pauseButton" class="iconButton"><%= require("./images/svg_icon-pause.svg")%></button><button id="playButton" class="iconButton"><%= require("./images/svg_icon-play.svg")%></button><span id="fps"></span><button id="scopeButton" class="iconButton"><%= require("./images/svg_icon-scope.svg")%></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="snapshotsRail" class="hidden rail _isBackground"></div>
+
+    <div id="scopeRail" class="hidden rail _isBackground">
+      <div id="scopeRail-blanket" class="_isBackground"></div>
+
+      <select id="scopeSelect">
+        <option value="sprites">SPRITE ATTRIBUTION</option>
+        <option value="background">BACKGROUND MODES</option>
+        <option value="collision">COLLISION SURFACES</option>
+        <option value="colorRam">COLOR RAM</option>
+        <option value="ramAccess">RAM ACCESS</option>
+      </select>
+
+      <div id="spriteScope" class="scopePanel hidden">
+        <div class="scope-legend">
+          <div>
+            <span class="scope-colorSample highlightCol0"></span>
+            <label>Sprite 0</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol1"></span>
+            <label>Sprite 1</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol2"></span>
+            <label>Sprite 2</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol3"></span>
+            <label>Sprite 3</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol4"></span>
+            <label>Sprite 4</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol5"></span>
+            <label>Sprite 5</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol6"></span>
+            <label>Sprite 6</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol7"></span>
+            <label>Sprite 7</label>
+          </div>
+        </div>
+      </div>
+
+      <div id="backgroundScope" class="scopePanel hidden">
+        <div class="scope-legend">
+          <div>
+            <span class="scope-colorSample highlightCol0"></span>
+            <label>Hi-res character</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol1"></span>
+            <label>Hi-res bitmap</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol2"></span>
+            <label>Extended bg color</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol3"></span>
+            <label>Illegal (ECM+bitmap)</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol4"></span>
+            <label>Muilticolor character</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol5"></span>
+            <label>Multicolor bitmap</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol6"></span>
+            <label>Illegal (MCM+ECM)</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol7"></span>
+            <label>Illegal (MCM+ECM+bitmap)</label>
+          </div>
+        </div>
+      </div>
+
+      <div id="collisionScope" class="scopePanel hidden">
+        <div class="scope-legend">
+          <div>
+            <span class="scope-colorSample highlightColF00"></span>
+            <label>Sprite</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol0F0"></span>
+            <label>Background</label>
+          </div>
+        </div>
+        <div class="scope-options">
+          <div>
+            <button id="noSprSprColButton" class="checkbox">Disable sprite-sprite collisions</button>
+          </div>
+          <div>
+            <button id="noSprBgColButton" class="checkbox">Disable sprite-background collisions</button>
+          </div>
+          <div>
+            <button id="noVisColButton" class="checkbox">Don’t visualize</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="ramAccessScope" class="scopePanel hidden">
+        <canvas id="ramAccessCanvas" width="256" height="256"></canvas>
+
+        <div class="scope-legend">
+          <div>
+            <span class="scope-colorSample highlightCol0F0"></span>
+            <label>CPU Read</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightCol00F"></span>
+            <label>VIC Read</label>
+          </div>
+          <div>
+            <span class="scope-colorSample highlightColF00"></span>
+            <label>CPU Write</label>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <canvas id="canvas" class="_isBackground"></canvas>
+
+    <div id="menu">
+      <div id="blanket"></div>
+      <div class="menu-flex-container">
+
+        <div>
+          <!-- Leftmost flexbox column. Unused; is same size as right, for
+          centering the middle column  -->
+        </div>
+
+        <div>
+
+          <div id="cursorKeysDialog" class="dialog undisplayed">
+            <button class="close">&times;</button>
+            <h3>CURSOR KEYS/SHIFT</h3>
+            <p>
+              <div id="cursors-intro">Your
+                <span id="shiftCursorsDiagram">
+                  <%= require("./images/svg_host-shift-cursors-dark.svg")%>
+                </span>
+                will control:
+              </div>
+              <div class="clickableOptions-row">
+                <button id="crsrs_key" class="clickableOption selected">
+                  <%= require("./images/svg_target-shift-cursors.svg")%>
+                  <div class="clickableOption-checkbox"></div>
+                </button><button id="crsrs_cp1" class="clickableOption selected">
+                  <%= require("./images/svg_target-cp-1.svg")%>
+                  <div class="clickableOption-checkbox"></div>
+                </button><button id="crsrs_cp2" class="clickableOption selected">
+                  <%= require("./images/svg_target-cp-2.svg")%>
+                  <div class="clickableOption-checkbox"></div>
+                </button>
+              </div>
+            </p>
+          </div>
+
+          <div id="keymapDialog" class="dialog undisplayed">
+            <button class="close">&times;</button>
+            <h3>KEYBOARD MAPPING</h3>
+            <div id="mapping-intro">When you type
+              <span id="shift8Diagram">
+                <%= require("./images/svg_host-shift-8-dark.svg")%>
+              </span>
+              , the C64 will receive:
+            </div>
+            <div class="clickableOptions-row">
+              <button id="map_natural" class="clickableOption selected">
+                <div id="natural-keymap-tooltip" class="tooltip"><%= require("./images/svg_natural-keymap-tooltip.svg")%></div>
+                <%= require("./images/svg_target-asterisk.svg")%>
+                <div class="clickableOption-radioButton"></div>
+              </button><button id="map_direct" class="clickableOption">
+                <div id="direct-keymap-tooltip" class="tooltip"><%= require("./images/svg_direct-keymap-tooltip.svg")%></div>
+                <%= require("./images/svg_target-shift-8.svg")%>
+                <div class="clickableOption-radioButton"></div>
+              </button>
+            </div>
+          </div>
+
+          <div id="loadDialog" class="dialog undisplayed">
+            <button class="close">&times;</button>
+            <h3>PROGRAM LOADER</h3>
+            <p>
+              Drag-and-drop files anywhere in the browser window to load them.
+            </p>
+            <div class="tip">
+              <h4>NOTE:</h4>
+              Accepted file formats are
+              <code>.t64</code>,
+              <code>.tap</code>,
+              <code>.prg</code>,
+              <code>.sid</code> (PSID, not RSID)
+            </div>
+            <div class="demoSection">
+              <p>No files to hand? Here are a few to give you a taste...</p>
+              
+              <div class="demoItems">
+                
+                <div>
+                  <button id="hoverBovverButton">
+                    Hover Bovver
+                    <code>.prg</code>
+                  </button>
+                </div>
+
+                <div>
+                  Jeff Minter game that began and ended the
+                  lawnmower theft simulation genre.
+                  <br>
+                  (You‘ll need to reassign the virtual joystick to Control Port 1)
+                </div>
+
+                <div>
+                  <button id="firstButton">
+                    First
+                    <code>.prg</code>
+                  </button>
+                </div>
+
+                <div>
+                  Awesome SID music by Jason Page
+                </div>
+
+              </div>
+            </div>
+
+            <div class="tip">
+              <h4>TIP:</h4>
+              For more great C64 content, jack into “The Internet,” a global
+              BBS where enthusiasts of cat videos, breakfast photographs,
+              political misinformation, and Commodore 64 progams share files.
+            </div>
+
+          </div>
+
+          <div id="aboutDialog" class="dialog undisplayed">
+            <button class="close">&times;</button>
+            <h3>VICIIOUS</h3>
+            <p>
+              A Commodore 64 emulator in JavaScript.
+            <p>
+            <footer>
+              Made with
+              <div id="chr115">
+                <%= require("./images/svg_chr-115.svg")%>
+                <div id="chr115-tooltip">
+                  <%= require("./images/svg_chr-115-tooltip.svg")%>
+                </div>
+              </div>
+              by  <a target="_blank" href="https://github.com/luxocrates">Luxocrates</a>
+            </footer>
+          </div>
+
+          <div id="errorDialog" class="dialog undisplayed">
+            <button class="close">&times;</button>
+            <h3>ERROR</h3>
+            <p id="errorDialog-text">
+              An error occurred.
+            </p>
+          </div>
+
+        </div>
+
+        <div>
+          <!-- This flexbox column -->
+        </div>
+
+      </div>
+
+    </div>
+  </body>
+</html>
