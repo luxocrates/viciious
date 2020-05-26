@@ -11,7 +11,7 @@ Viciious brings the outstanding capabilities of the Commodore 64 microcomputer t
 
 ## Quick Start
 
-- [Run the live demo](https://luxocrates.github.io/viciious/) or open the `dist/web-prod/viciious.html` file in your web browser.
+- [Run the live demo](https://luxocrates.github.io/viciious/) on a desktop web browser.
  - Drag-and-drop `.t64`, `.tap`, `.prg` or `.sid` files into the browser window.
  - Your cursor keys and Shift map to a joystick plugged into Control Port 2.
  - What’s written on your keyboard is probably what gets typed in.
@@ -38,13 +38,13 @@ To maximize ease-of-use, Viciious will continue to be developed as a self-contai
 
 ## Limitations
 
-See [limitations](limitations.md) document. TL;DR: Viciious emulates a PAL Commodore 64 in real-time, and makes some attempts to be cycle-accurate, but isn’t. It emulates a tape deck but no disk drive, and offers direct-injection of programs into memory for quick loading. All the major hardware components are present, but some features, like sound filtering, are absent. Its compatibility isn’t 100%, partly for the above reasons, and partly because of bugs. It _can_ run in real-time on mobile, but the UI is unsuitable.
+See [limitations](limitations.md) document. TL;DR: Viciious emulates a PAL Commodore 64 in real-time, and makes some attempts to be cycle-accurate, but isn’t. It emulates a tape deck but no disk drive, and offers direct-injection of program files into memory for quick loading. All the major hardware components are present (and the CPU emulation covers all opcodes and quasi-ops), but some features, like sound filtering, are absent. Its compatibility isn’t 100%, partly for the above reasons, and partly because of bugs. It _can_ run in real-time on mobile, but the UI is unsuitable.
 
  Don’t expect snapshot files to be interchangeable between versions pre v1.0.0.
 
 ## Building and Running
 
-The pre-built `dist/web-prod/viciious.html` file is all you’ll need to get the emulator running. You can ignore this section unless you want to make changes, or run the emulator within your command line.
+The [live demo](https://luxocrates.github.io/viciious/) is a fully-functioning build of the emulator sources. You can ignore this section unless you want to make changes, or run the emulator within your command line.
 
 For all of the builds below, first [install Node.js](https://nodejs.org/en/download/) if you don’t have it. 
 
@@ -66,9 +66,11 @@ In terms of the compiled emulator code, one key difference between dev and prod 
 
 #### Web host: Creating a single-file HTML distribution
 
-To update the bundle at `dist/web-prod/viciious.html`, run the command:
+To create a single-file bundle like the one served as the live demo, run the command:
 
     $ npm run build-web-prod
+
+The output file will be created at `dist/web-prod/viciious.html`.
 
 There’s also a development configuration bundle that you can build:
 
@@ -76,25 +78,21 @@ There’s also a development configuration bundle that you can build:
 
 ...which outputs files to the `dist/web-dev` directory.
 
+#### Node.js host: Building
 
-#### Node.js host: Running
+Create a single-file bundle at `dist/node/viciious.js` by running:
 
-As with the web-hosted target, this repo contains a pre-built bundle for the Node.js-hosted mode. Start it with:
+    $ npm run build-node
 
-    $ node dist/node/viciious.js <someprogram>
+You can now run  the emulator with the command:
 
+` $ node dist/node/viciious.js <someprogram>`
 
 ...where `<someprogram>` is a path to a `.t64`, `.tap`, `.prg` or `.sid` file (not that you’d get any sound out of the `.sid` in this mode), or a `.json` from a previous snapshot.
 
 You can omit the program argument, in which case the emulator will boot to Basic.
 
-#### Node.js host: Building
-
-To update the bundle at `dist/node/viciious.js`, run:
-
-    $ npm run build-node
-
-You can also build to the bundle and run it with a single command, using:
+You can also build to the bundle and run it (to Basic) with a single command, using:
 
     $ npm run run-node
     
@@ -118,4 +116,4 @@ As well as dropping program files into the browser window to boot them, you can 
 
 The emulation code and UI assets in Viciious were authored from scratch and placed in the public domain.
 
-Caveat: this does not include target code that the emulator runs which is included in this repo and bundled into the app. Specifically: the contents of the `rom` directory, the Wolfgang Lorenz test suite (`src/tests/lorenz-base64.js`), and the demo programs (`host/webFrontEnd/demos`). These files are derived from works by other authors, and no representation is made here as to their ownership or distribution terms.
+Caveat: this does not include target code that the emulator runs which is included in this repo and bundled into the app. Specifically: the contents of the `rom` directory, the Wolfgang Lorenz test suite (`src/tests/lorenz-base64.js`), and the demo programs (`src/host/webFrontEnd/demos`). These files are derived from works by other authors, and no representation is made here as to their ownership or distribution terms.
