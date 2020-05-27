@@ -1891,9 +1891,9 @@ function op_BIT_tmp_void() {
 function op_ANE_tmp_void() {
   // Quasi-op: "XAA" (†4, which is inaccurate), "ANE" (†1)
 
-  // †1 describes how this 0x11 constant can altenatively be 0x10, 0x01 or 0x00
-  // depending on residual charge on the open bus. The 0x11 used here is the
-  // value expected by the Lorenz aneb test.
+  // †1 describes how this 0x11 constant can alternatively be 0x10, 0x01,
+  // or 0x00 depending on residual charge on the open bus. The 0x11 used here
+  // is the value expected by the Lorenz aneb test.
   state.a = ((state.a & 0x11 & state.x) | ( 0xee & state.x)) & state.tmp;
   state.z = state.a ? 0 : 1;
   state.n = (state.a & 0x80) ? 1 : 0;
