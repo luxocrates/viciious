@@ -84,7 +84,7 @@ Create a single-file bundle at `dist/node/viciious.js` by running:
 
     $ npm run build-node
 
-You can now run  the emulator with the command:
+You can now run the emulator with the command:
 
 ` $ node dist/node/viciious.js <someprogram>`
 
@@ -95,7 +95,7 @@ You can omit the program argument, in which case the emulator will boot to Basic
 You can also build to the bundle and run it (to Basic) with a single command, using:
 
     $ npm run run-node
-    
+
 #### Running the automated tests
 
 The repo includes a build of Wolfgang Lorenz’s excellent emulator test suite. Run it with the command:

@@ -93,7 +93,7 @@ function installCli() {
           c64.cpu.showState();
         }
         catch (r) {}
-        return c64.cpu.state;
+        return c64.cpu.getState();
       }
     },
     {
@@ -137,21 +137,21 @@ function installCli() {
 
 async function singleStep(steps = 1) {
   while (steps--) {
-    const initialPc = c64.cpu.state.pc;
+    const initialPc = c64.cpu.getState().pc;
     await runloop.run({
-      tick: () => c64.cpu.state.pc !== initialPc
+      tick: () => c64.cpu.getState().pc !== initialPc
     });
     c64.cpu.showState();
   }
 }
 
-async function untilPc(pc) {
+async function untilPc(pc, fast) {
   if (pc === undefined) {
     console.error("Missing argument: PC address");
     return;
   }
 
-  await runloop.untilPc(pc);
+  await runloop.untilPc(pc, fast);
   c64.cpu.showState();
 }
 

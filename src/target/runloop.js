@@ -196,10 +196,13 @@ async function untilPc(pc, fast = false) {
     tick: () => regs.pc !== pc,
   });
 
-  return run({
+  const profile = {
     tick: () => regs.pc === pc,
-    fps: fast ? Infinity : undefined,
-  });
+  };
+
+  if (fast) profile.fps = Infinity;
+
+  return run(profile);
 }
 
 function type(str) {
