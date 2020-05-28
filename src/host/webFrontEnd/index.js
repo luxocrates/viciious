@@ -8,10 +8,12 @@
 
 import { initDialogs, showErrorDialog } from "./dialogs";
 import { initTrays, toggleTrays } from "./trays";
-import { initJoystickDialog } from "./joystickDialog";
-import { initKeyMapDialog } from "./keyMapDialog";
-import { initLoaderDialog } from "./loaderDialog";
 import { initScopes } from "./scopes";
+
+import { initJoystickDialog } from "./joystickDialog";
+import { initKeyMapDialog }   from "./keyMapDialog";
+import { initLoaderDialog }   from "./loaderDialog";
+import { initDiskDialog }     from "./diskDialog";
 
 // A development aid. Don't commit with this turned on.
 const pauseOnMenus = false;
@@ -53,6 +55,7 @@ export function attach(nascentC64) {
   initJoystickDialog(c64);
   initKeyMapDialog(c64);
   initLoaderDialog(c64);
+  initDiskDialog(c64);
   initScopes(c64);
 
   c64.hooks.reportError = showErrorDialog;

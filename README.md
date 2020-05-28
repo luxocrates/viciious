@@ -12,7 +12,7 @@ Viciious brings the outstanding capabilities of the Commodore 64 microcomputer t
 ## Quick Start
 
 - [Run the live demo](https://luxocrates.github.io/viciious/) on a desktop web browser.
- - Drag-and-drop `.t64`, `.tap`, `.prg` or `.sid` files into the browser window.
+ - Drag-and-drop `.t64`, `.d64`, `.tap`, `.prg` or `.sid` files into the browser window.
  - Your cursor keys and Shift map to a joystick plugged into Control Port 2.
  - What’s written on your keyboard is probably what gets typed in.
  - Click anywhere on the page to open menus.
@@ -38,7 +38,7 @@ To maximize ease-of-use, Viciious will continue to be developed as a self-contai
 
 ## Limitations
 
-See [limitations](limitations.md) document. TL;DR: Viciious emulates a PAL Commodore 64 in real-time, and makes some attempts to be cycle-accurate, but isn’t. It emulates a tape deck but no disk drive, and offers direct-injection of program files into memory for quick loading. All the major hardware components are present (and the CPU emulation covers all opcodes and quasi-ops), but some features, like sound filtering, are absent. Its compatibility isn’t 100%, partly for the above reasons, and partly because of bugs. It _can_ run in real-time on mobile, but the UI is unsuitable.
+See [limitations](limitations.md) document. TL;DR: Viciious emulates a PAL Commodore 64 in real-time, and makes some attempts to be cycle-accurate, but isn’t. It emulates a tape deck but no disk drive, and offers direct-injection of program files into memory for quick loading (including from disk images). All the major hardware components are present (and the CPU emulation covers all opcodes and quasi-ops), but some features, like sound filtering, are absent. Its compatibility isn’t 100%, partly for the above reasons, and partly because of bugs. It _can_ run in real-time on mobile, but the UI is unsuitable.
 
  Don’t expect snapshot files to be interchangeable between versions pre v1.0.0.
 

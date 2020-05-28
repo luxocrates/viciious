@@ -5,7 +5,7 @@
  The following functionality of target hardware is **not implemented**:
 
 Configuration
-- Emulation of any external devices except the tape deck and joysticks. The emulator presently has no support for `.d64` files, and adding it is very high priority for the future. (Cartridges, less so.)
+- Emulation of any external devices except the tape deck and joysticks. The emulator cannot presently emulate a disk drive, and adding it is high priority for the future (cartridges, less so). However, when given a `.d64` disk image, it can show the disk’s directory, and allow a single program to be launched from it.
 - 60Hz (NTSC) VIC/system-clock
 - Minor timing differences between the C64 and C64C. The classic breadbox is the reference hardware for this emulator.
 

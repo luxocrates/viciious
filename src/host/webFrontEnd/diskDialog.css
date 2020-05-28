@@ -1,0 +1,27 @@
+#diskDialog-dirEntries {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 32px 0;
+}
+
+#diskDialog-dirEntries button {
+  display: block;
+  padding: 12px;
+  background-color: #0984b9;
+  margin: 2px;
+  line-height: 0;
+  border-radius: 11px;
+}
+
+#diskDialog-dirEntries button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+#diskDialog-dirEntries button:disabled {
+  background-color: #ddd;
+}
+
+#diskDialog-dirEntries button:hover:not(:disabled) {
+  opacity: 0.7;
+}
