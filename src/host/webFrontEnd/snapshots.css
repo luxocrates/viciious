@@ -47,11 +47,13 @@
   border-radius: 13px;
   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNiAyNiI+PGNpcmNsZSBjeD0iMTMiIGN5PSIxMyIgcj0iMTMiIHN0eWxlPSJmaWxsOiMyMjIiLz48cG9seWdvbiBwb2ludHM9IjE3LjkgOS41MiAxNi40OCA4LjEgMTMgMTEuNTkgOS41MiA4LjEgOC4xIDkuNTIgMTEuNTkgMTMgOC4xIDE2LjQ4IDkuNTIgMTcuOSAxMyAxNC40MSAxNi40OCAxNy45IDE3LjkgMTYuNDggMTQuNDEgMTMgMTcuOSA5LjUyIiBzdHlsZT0iZmlsbDojZmZmIi8+PC9zdmc+");
   opacity: 0;
-  transition: opacity 0.1s;
+  transition: opacity 0.1s, transform 0.1s;
+  transform: scale(0.5);
 }
 
 .snapshot:hover .close {
   opacity: 1;
+  transform: scale(1);
 }
 
 .snapshot .close:active {

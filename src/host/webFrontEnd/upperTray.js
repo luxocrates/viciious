@@ -1,30 +1,25 @@
 let c64;
+let serial = null;
+let countdownInterval = null;
 
 export function initUpperTray(nascentC64) {
   c64 = nascentC64;
 
   handlerForEventForId(
     "resetButton", 
-    "mousedown",
-    () => {
-      startShake();
-      // The c64 needs to be running to show static, but we shouldn't be
-      // hearing the last program play sounds still. So reset it, even though
-      // there's another reset on the button up. Of course, anybody using a
-      // scope won't be fooled.
-      c64.runloop.reset();
-      c64.vic.showStatic();
-      c64.runloop.run();
-    }
+    "click",
+    () => undoableReset()
   );
 
   handlerForEventForId(
-    "resetButton", 
+    "undoResetButton", 
     "click",
     () => {
-      stopShake();
-      c64.runloop.reset();
-      c64.runloop.run();
+      if (serial) {
+        c64.runloop.deserialize(serial);
+        c64.runloop.run();
+        removeUndoResetButton();
+      }
     }
   );
 }
@@ -36,16 +31,65 @@ function handlerForEventForId(id, eventName, fn) {
   ;
 }
 
-function startShake() {
-   document
-   .getElementsByTagName("body")[0]
-    .classList
-    .add("shake");
+function undoableReset() {
+  serial = c64.runloop.serialize();
+  c64.runloop.reset();
+  c64.runloop.run();
+
+  removeUndoResetButton();
+  addUndoResetButton();
 }
 
-function stopShake() {
-   document
-    .getElementsByTagName("body")[0]
-    .classList
-    .remove("shake");
+function removeUndoResetButton() {
+
+  const [ resetButton, undoResetButton, label ] = [
+    "resetButton",
+    "undoResetButton",
+    "undoResetButton-label"
+  ].map((id) => document.getElementById(id));
+
+  resetButton.classList.remove("hidden");
+  undoResetButton.classList.add("hidden");
+  label.innerText = "";
+
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+}
+
+function addUndoResetButton() {
+
+  const [
+    resetButton,
+    undoResetButton,
+    label
+  ] = [
+    "resetButton",
+    "undoResetButton",
+    "undoResetButton-label"
+  ].map((id) => document.getElementById(id));
+
+  resetButton.classList.add("hidden");
+  undoResetButton.classList.remove("hidden");
+
+  const updateLabelCountdown = () => {
+    label.innerText = `Undo (${countdown})`;
+  };
+  
+  let countdown = 6;
+  updateLabelCountdown();
+
+  if (countdownInterval) clearInterval(countdownInterval);
+
+  countdownInterval = setInterval(
+    () => {
+      if (--countdown === 0) {
+        removeUndoResetButton();
+        serial = null;
+      }
+      else updateLabelCountdown();
+    },
+    1000
+  );
 }
