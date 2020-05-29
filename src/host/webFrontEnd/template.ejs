@@ -12,36 +12,6 @@
       font-family: "Futura", "Century Gothic", sans-serif;
     }
 
-    body.shake .tray, body.shake #canvas, body.shake #snapshotsRail, body.shake #scopeRail {
-      animation-name: noise;
-      animation-duration: 0.5s;
-      animation-iteration-count: infinite;
-    }
-
-    @keyframes noise {
-      0%   { transform: translateY( 1px); }
-      5%   { transform: translateY( 0px); }
-      10%  { transform: translateY( 2px); }
-      15%  { transform: translateY( 1px); }
-      20%  { transform: translateY( 2px); }
-      25%  { transform: translateY( 1px); }
-      30%  { transform: translateY( 0px); }
-      35%  { transform: translateY( 1px); }
-      40%  { transform: translateY( 2px); }
-      45%  { transform: translateY( 0px); }
-      50%  { transform: translateY(-2px); }
-      55%  { transform: translateY( 0px); }
-      60%  { transform: translateY(-1px); }
-      65%  { transform: translateY( 0px); }
-      70%  { transform: translateY( 1px); }
-      75%  { transform: translateY(-2px); }
-      80%  { transform: translateY(-1px); }
-      85%  { transform: translateY(-2px); }
-      90%  { transform: translateY( 2px); }
-      95%  { transform: translateY( 1px); }
-      100% { transform: translateY(-1px); }
-    }
-
     #canvas {
       position: fixed;
       transition-property: top, left, width, height;
@@ -141,6 +111,7 @@
         <div><button id="aboutButton" class="iconButton"><%= require("./images/svg_viciious-logo.svg")%></button></div>
         <div></div>
         <div>
+          <button id="undoResetButton" class="iconButton hidden"><span id="undoResetButton-label"></span></button>
           <button id="resetButton" class="iconButton"><%= require("./images/svg_icon-power.svg")%></button>
         </div>
       </div>

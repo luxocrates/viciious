@@ -94,3 +94,18 @@
     bottom: 22px;
   }
 }
+
+#undoResetButton:not(.hidden) {
+  display: inline-block;
+  position: relative;
+  width: 70px;
+  height: 70px;
+}
+
+#undoResetButton-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 28px;
+  color: white;
+}
