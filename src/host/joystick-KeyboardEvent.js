@@ -11,21 +11,21 @@ function setSetJoystick1(fn) { setJoystick1 = fn; }
 function setSetJoystick2(fn) { setJoystick2 = fn; }
 
 
-const JOSTICK_UP    = 0x01;
-const JOSTICK_DOWN  = 0x02;
-const JOSTICK_LEFT  = 0x04;
-const JOSTICK_RIGHT = 0x08;
-const JOSTICK_FIRE  = 0x10;
+const JOYSTICK_UP    = 0x01;
+const JOYSTICK_DOWN  = 0x02;
+const JOYSTICK_LEFT  = 0x04;
+const JOYSTICK_RIGHT = 0x08;
+const JOYSTICK_FIRE  = 0x10;
 
 let buttonsDown = new Set();
 
 function eventToJoystickButton(event) {
   switch (event.key) {
-    case "Shift":      return JOSTICK_FIRE;
-    case "ArrowUp":    return JOSTICK_UP;
-    case "ArrowDown":  return JOSTICK_DOWN;
-    case "ArrowLeft":  return JOSTICK_LEFT;
-    case "ArrowRight": return JOSTICK_RIGHT;
+    case "Shift":      return JOYSTICK_FIRE;
+    case "ArrowUp":    return JOYSTICK_UP;
+    case "ArrowDown":  return JOYSTICK_DOWN;
+    case "ArrowLeft":  return JOYSTICK_LEFT;
+    case "ArrowRight": return JOYSTICK_RIGHT;
   }
 }
 
@@ -41,35 +41,37 @@ function tellCia() {
   if (c64.joystick.toControlPort2) setJoystick2((~byte) & 0xff);
 }
 
-globalThis.addEventListener(
-  "keydown",
-  event => {
-    const setKey = eventToJoystickButton(event);
-    if (!setKey) return;
+function setUpEventListeners() {
+  globalThis.addEventListener(
+    "keydown",
+    event => {
+      const setKey = eventToJoystickButton(event);
+      if (!setKey) return;
 
-    buttonsDown.add(setKey);
-    tellCia();
-  }
-);
+      buttonsDown.add(setKey);
+      tellCia();
+    }
+  );
 
-globalThis.addEventListener(
-  "keyup",
-  event => {
-    const setKey = eventToJoystickButton(event);
-    if (!setKey) return;
+  globalThis.addEventListener(
+    "keyup",
+    event => {
+      const setKey = eventToJoystickButton(event);
+      if (!setKey) return;
 
-    buttonsDown.delete(setKey);
-    tellCia();
-  }
-);
+      buttonsDown.delete(setKey);
+      tellCia();
+    }
+  );
 
-globalThis.addEventListener(
-  "blur",
-  event => {
-    buttonsDown.clear();
-    tellCia();
-  }
-);
+  globalThis.addEventListener(
+    "blur",
+    event => {
+      buttonsDown.clear();
+      tellCia();
+    }
+  );
+}
 
 export function attach(nascentC64) {
 
@@ -82,4 +84,6 @@ export function attach(nascentC64) {
     toControlPort1: false,
     toControlPort2: true,
   };
+  
+  setUpEventListeners();
 }
