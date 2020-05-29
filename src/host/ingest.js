@@ -1,5 +1,6 @@
 import { ingest_prg }  from "./ingest-prg";
 import { ingest_t64 }  from "./ingest-t64";
+import { ingest_d64 }  from "./ingest-d64";
 import { ingest_sid }  from "./ingest-sid";
 import { ingest_tap }  from "./ingest-tap";
 import { ingest_json } from "./ingest-json";
@@ -7,6 +8,7 @@ import { ingest_json } from "./ingest-json";
 const ingestors = [
   [/\.prg$/i , ingest_prg  ],
   [/\.t64$/i , ingest_t64  ],
+  [/\.d64$/i , ingest_d64  ],
   [/\.sid$/i , ingest_sid  ],
   [/\.tap$/i , ingest_tap  ],
   [/\.json$/i, ingest_json ],

@@ -182,3 +182,10 @@ export const hexDigitToC64FontCodePoint = [
   0x38, 0x39, 0x01, 0x02,
   0x03, 0x04, 0x05, 0x06,
 ];
+
+export function petsciiToFontCodePoint(num) {
+  // See Kernal around $e737
+  if (num <  0x20) return 0x20;
+  if (num >= 0x60) return num & 0xdf;
+  else             return num & 0x3f;
+}

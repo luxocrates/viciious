@@ -361,6 +361,7 @@
               <h4>NOTE:</h4>
               Accepted file formats are
               <code>.t64</code>,
+              <code>.d64</code>,
               <code>.tap</code>,
               <code>.prg</code>,
               <code>.sid</code> (PSID, not RSID)
@@ -405,6 +406,23 @@
               political misinformation, and Commodore 64 progams share files.
             </div>
 
+          </div>
+
+          <div id="diskDialog" class="dialog undisplayed">
+            <button class="close">&times;</button>
+            <h3>DISK IMAGE LOADER</h3>
+            <p>
+              Viciious does not yet offer drive emulation, but here’s a
+              directory listing of the .d64 you dropped in. Choose a PRG and
+              I can inject it into memory and boot it for you.
+            </p>
+            <div id="diskDialog-dirEntries">
+            </div>
+            <div class="tip">
+              <h4>NOTE:</h4>
+              The program you launch will not be able to access the rest of the
+              disk image.
+            </div>
           </div>
 
           <div id="aboutDialog" class="dialog undisplayed">
