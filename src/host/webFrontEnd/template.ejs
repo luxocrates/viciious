@@ -10,6 +10,11 @@
     body {
       margin: 0;
       font-family: "Futura", "Century Gothic", sans-serif;
+      scrollbar-width: none; /* Firefox */
+    }
+
+    body::-webkit-scrollbar {
+      display: none;
     }
 
     #canvas {
@@ -89,17 +94,15 @@
       overflow-x: hidden;
       overflow-y: auto;
       transition: opacity 0.375s;
-
-      /* Regrettable... */
       scrollbar-width: none; /* Firefox */
-    }
-
-    .rail.hidden {
-      opacity: 0;
     }
 
     .rail::-webkit-scrollbar {
       display: none;
+    }
+
+    .rail.hidden {
+      opacity: 0;
     }
 
   </style>
@@ -219,11 +222,11 @@
       <div id="collisionScope" class="scopePanel hidden">
         <div class="scope-legend">
           <div>
-            <span class="scope-colorSample highlightColF00"></span>
+            <span class="scope-colorSample highlightCol0"></span>
             <label>Sprite</label>
           </div>
           <div>
-            <span class="scope-colorSample highlightCol0F0"></span>
+            <span class="scope-colorSample highlightCol3"></span>
             <label>Background</label>
           </div>
         </div>

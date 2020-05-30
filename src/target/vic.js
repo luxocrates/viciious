@@ -48,7 +48,7 @@ const config = {
 const specialStateValues = [
   ["charBuffer",       Uint8Array,  40    ],
   ["colorBuffer",      Uint8Array,  40    ],
-  ["bgRgbQueue",       Uint32Array, 8     ],
+  ["bgColCodeQueue",   Uint32Array, 8     ],
   ["bgMaskQueue",      Uint8Array,  8     ],
   ["bgCollisionQueue", Uint8Array,  8     ],
   ["color",            Uint8Array,  0x400 ],
@@ -163,9 +163,10 @@ function reset() {
 
     // The 'sequencers' of the background pixels (char/bitmap)
     bgQueuePos:       0,
-    bgRgbQueue:       new Uint32Array(8),
+    bgColCodeQueue:   new Uint8Array(8),
     bgMaskQueue:      new Uint8Array(8),
     bgCollisionQueue: new Uint8Array(8),
+    bgDebugQueue:     new Array(8),         // not to be serialized
 
     nextCharCode: 0,
     nextBgByte:   0,
@@ -240,9 +241,7 @@ function loadNextBgByte() {
   }
 
   else {
-
     let char = state.charBuffer[indexOfCharBuffer];
-    const fgColor = state.colorBuffer[indexOfCharBuffer] & 0xf;
 
     // In extended background color mode, the most significant three bits of the
     // character code will determine the background color instead of the
@@ -251,7 +250,6 @@ function loadNextBgByte() {
 
     let charByte;
     const lineOfChar = (state.raster - state.yscroll) & 0x7;
-
 
     let charMemBase = ((state.memorySetup & 0b1110) >> 1) * 0x800;
 
@@ -264,36 +262,25 @@ function loadNextBgByte() {
 }
 
 function loadBgQueues() {
-
-  let rgbPalette = (
-    config.scopeSprites ||
-    config.scopeCollision
-  )
-    ? grayscalePalette
-    : systemPalette
-  ;
-
-  let charByte = state.nextBgByte;
-  let fgColor = state.nextFgCol;
-
-  if (config.scopeColorRam) {
-    rgbPalette = colorColorPalettes[fgColor];
-  }
+  let charByte  = state.nextBgByte;
+  let fgColCode = state.nextFgCol;
 
   state.bgQueuePos = 0;
 
+  // Initialize the scope pixel instrumentation to undefined
+  state.bgDebugQueue.fill(config.scopeColorRam ? fgColCode : undefined);
+
+  if (config.scopeBackground) {
+    state.bgDebugQueue.fill(
+      (state.multicolor ? 0b100 : 0) |
+      (state.extendedBg ? 0b010 : 0) |
+      (state.bitmap     ? 0b001 : 0)
+    );
+  }
+
   // Illegal modes
   if (state.extendedBg && (state.multicolor || state.bitmap)) {
-
-    if (config.scopeBackground) {
-      rgbPalette = highlightPalettes[
-        (state.multicolor ? 0b100 : 0) |
-        (state.extendedBg ? 0b010 : 0) |
-        (state.bitmap     ? 0b001 : 0)
-      ];
-    }
-
-    state.bgRgbQueue      .fill(rgbPalette[0]);  // color code 0 being black
+    state.bgColCodeQueue  .fill(0);
     state.bgMaskQueue     .fill(0);
     state.bgCollisionQueue.fill(0);
     return;
@@ -303,25 +290,22 @@ function loadBgQueues() {
     
     if (state.multicolor) {
 
-      if (config.scopeBackground) rgbPalette = highlightPalettes[0b101];
-
       const palette = [
         state.backgroundColor,
         state.nextCharCode >> 4,
         state.nextCharCode & 0xf,
-        fgColor & 0xf,
+        fgColCode & 0xf,
       ];
 
       let nextBgByte = state.nextBgByte;
 
       for (let x = 0; x < 4; x++) {
 
-        const index     = (nextBgByte & 0b11000000) >> 6;
-        const colorCode = palette[index];
-        const rgbCode   = rgbPalette[colorCode];
+        const index   = (nextBgByte & 0b11000000) >> 6;
+        const colCode = palette[index];
 
-        state.bgRgbQueue[(2 * x) + 0] = rgbCode;
-        state.bgRgbQueue[(2 * x) + 1] = rgbCode;
+        state.bgColCodeQueue[(2 * x) + 0] = colCode;
+        state.bgColCodeQueue[(2 * x) + 1] = colCode;
 
         state.bgMaskQueue[(2 * x) + 0] = index > 0;
         state.bgMaskQueue[(2 * x) + 1] = index > 0;
@@ -334,20 +318,17 @@ function loadBgQueues() {
     }
     else {
 
-      if (config.scopeBackground) rgbPalette = highlightPalettes[0b001];
-
-      const col0 = state.nextCharCode & 0xf;
-      const col1 = state.nextCharCode >> 4;
-
-      const rgbCol0 = rgbPalette[col0];
-      const rgbCol1 = rgbPalette[col1];
+      const colCode0 = state.nextCharCode & 0xf;
+      const colCode1 = state.nextCharCode >> 4;
 
       let nextBgByte = state.nextBgByte;
 
       for (let x = 0; x < 8; x++) {
 
-        state.bgRgbQueue[x] = (nextBgByte & 0b10000000) ? rgbCol1 : rgbCol0;
-        state.bgMaskQueue[x] = state.bgCollisionQueue[x] = (nextBgByte & 0b10000000) ? 1 : 0;
+        const is1 = nextBgByte & 0b10000000;
+
+        state.bgColCodeQueue[x] = is1 ? colCode1 : colCode0;
+        state.bgMaskQueue[x]    = state.bgCollisionQueue[x] = is1 ? 1 : 0;
 
         nextBgByte <<= 1;
       }
@@ -358,19 +339,16 @@ function loadBgQueues() {
 
   if (state.extendedBg) {
 
-    if (config.scopeBackground) rgbPalette = highlightPalettes[0b010];
+    let bgColCode;
 
-    let bgColor;
-
-    if      (state.nextCharCode < 64)  bgColor = state.backgroundColor;
-    else if (state.nextCharCode < 128) bgColor = state.extraBgColor1;
-    else if (state.nextCharCode < 192) bgColor = state.extraBgColor2;
-    else                               bgColor = state.extraBgColor3;
+    if      (state.nextCharCode < 64)  bgColCode = state.backgroundColor;
+    else if (state.nextCharCode < 128) bgColCode = state.extraBgColor1;
+    else if (state.nextCharCode < 192) bgColCode = state.extraBgColor2;
+    else                               bgColCode = state.extraBgColor3;
 
     for (let x = 0; x < 8; x++) {
 
-      const colorCode = (charByte & 0b10000000) ? fgColor : bgColor;
-      state.bgRgbQueue[x] = rgbPalette[colorCode];
+      state.bgColCodeQueue[x] = (charByte & 0b10000000) ? fgColCode : bgColCode;
 
       // TODO: I'm presuming here. Check this.
       state.bgMaskQueue[x] = state.bgCollisionQueue[x] = (charByte & 0b10000000) ? 1 : 0;
@@ -379,26 +357,23 @@ function loadBgQueues() {
     }
   }
 
-  else if (state.multicolor && (fgColor > 7)) {
-
-    if (config.scopeBackground) rgbPalette = highlightPalettes[0b100];
+  else if (state.multicolor && (fgColCode > 7)) {
 
     const palette = [
       state.backgroundColor,
       state.extraBgColor1,
       state.extraBgColor2,
-      fgColor & 0x7,
+      fgColCode & 0x7,
     ];
 
     for (let x = 0; x < 4; x++) {
 
       let index = (charByte & 0b11000000) >> 6;
 
-      const colorCode = palette[index];
-      const rgbCode = rgbPalette[colorCode];
+      const colCode = palette[index];
 
-      state.bgRgbQueue[(2 * x) + 0] = rgbCode;
-      state.bgRgbQueue[(2 * x) + 1] = rgbCode;
+      state.bgColCodeQueue[(2 * x) + 0] = colCode;
+      state.bgColCodeQueue[(2 * x) + 1] = colCode;
 
       state.bgMaskQueue[(2 * x) + 0] = index > 0;
       state.bgMaskQueue[(2 * x) + 1] = index > 0;
@@ -413,19 +388,13 @@ function loadBgQueues() {
   else {
     // Regular, no-color-tricks background mode
 
-    if (config.scopeBackground) {
-      // Since the multicolor mode with color code < 8 falls through to this case
-      if (state.multicolor) rgbPalette = highlightPalettes[0b100];
-      else rgbPalette = highlightPalettes[0b000];
-    }
-
     for (let x = 0; x < 8; x++) {
 
       // I feel we should just paint them all as the foreground color, and make
       // the bgMaskQueue processor take it out.
-      const colorCode = (charByte & 0b10000000) ? fgColor : state.backgroundColor;
+      const colorCode = (charByte & 0b10000000) ? fgColCode : state.backgroundColor;
       
-      state.bgRgbQueue      [x] = rgbPalette[colorCode];
+      state.bgColCodeQueue  [x] = colorCode;
       state.bgMaskQueue     [x] = (charByte & 0b10000000);
       state.bgCollisionQueue[x] = (charByte & 0b10000000);
 
@@ -435,8 +404,8 @@ function loadBgQueues() {
 }
 
 
-function get8BackgroundPixels(xc, y, color, mask, collision) {
-  
+function get8BackgroundPixels(xc, y, colCode, mask, collision, debug) {
+
   const aboveTop = (
     ((state.raster - state.yscroll) >> 3) < 
     (BORDER_OFF_LINE_25_ROWS >> 3)
@@ -452,19 +421,7 @@ function get8BackgroundPixels(xc, y, color, mask, collision) {
     // TODO: the real VIC serves char data from $3fff here
     for (let i = 0; i < 8; i++) {
 
-      // TODO: We're mapping scope to palettes in too many different places.
-      // This needs a more elegant solution.
-      const rgbPalette = (
-        config.scopeSprites    ||
-        config.scopeBackground ||
-        config.scopeCollision  ||
-        config.scopeColorRam
-      )
-        ? grayscalePalette
-        : systemPalette
-      ;
-
-      color[i]     = rgbPalette[state.backgroundColor];
+      colCode[i]   = state.backgroundColor;
       mask [i]     = false;
       collision[i] = false;
     }
@@ -480,16 +437,13 @@ function get8BackgroundPixels(xc, y, color, mask, collision) {
         loadBgQueues();
       }
 
-      color    [x] =         state.bgRgbQueue      [state.bgQueuePos];
+      colCode  [x] =         state.bgColCodeQueue  [state.bgQueuePos];
       mask     [x] = Boolean(state.bgMaskQueue     [state.bgQueuePos]);
       collision[x] = Boolean(state.bgCollisionQueue[state.bgQueuePos]);
-
-      // Visualizing debug aid
-      // color[x] = mask[x] ? 0xff0000 : 0x000000;
+      debug    [x] =         state.bgDebugQueue    [state.bgQueuePos];
 
       if (config.scopeCollision) {
-        // Sadly we've lost the original color code by this point
-        if (collision[x]) color[x] = highlightPalettes[3][15];
+        if (collision[x]) debug[x] = 0;
       }
 
       state.bgQueuePos++;
@@ -559,35 +513,31 @@ function rasterMightIrq() {
   reconsiderVicIrq();
 }
 
-function get8Pixels(xc, y) {
-  const defaultPalette = (
-    (
-      config.scopeSprites    ||
-      config.scopeBackground ||
-      config.scopeCollision  ||
-      config.scopeColorRam
-    )
-    ? grayscalePalette
-    : systemPalette
-  );
+function get8Pixels(xc, y, colCode, debug) {
+
+  // must fill in colCode
+  // need not fill in debug: will always be 8 undefined's coming in.
 
   // Display off?
-  if (!state.displayEnable) return new Array(8).fill(defaultPalette[state.borderColor]);
+  if (!state.displayEnable) {
+    colCode.fill(state.borderColor);
+    return;
+  }
 
   // If we're on the top/bottom border, output the border color
   if (state.dflag) {
-    return new Array(8).fill(defaultPalette[state.borderColor]);
+    colCode.fill(state.borderColor);
+    return;
   }
 
   // TODO: we should probably avoid reallocating these each time
-  let color     = new Array(8);
   let mask      = new Array(8);
   let collision = new Array(8);
 
   // Some nasty magic numbers that haven't been thought through and are just a
   // band-aid optimization.
   if ((state.cycleOfLine >= 16) && (state.cycleOfLine <= 57)) {
-    get8BackgroundPixels(xc, y, color, mask, collision);
+    get8BackgroundPixels(xc, y, colCode, mask, collision, debug);
   }
 
   // If we're on the left/right border, output the border color, now that we've
@@ -595,8 +545,15 @@ function get8Pixels(xc, y) {
   // (Had we not, the character tiles wouldn't have loaded correctly)
   if (state.vflag) {
 
-    // oh this won't work. The right border gets brought in 9 pixels in 38-column mode.
-    return new Array(8).fill(defaultPalette[state.borderColor]);
+    // Messy: undo the populating of debug info that the get8BackgroundPixels
+    // just performed. Really, the border painting should be like a separate
+    // process.
+    debug.fill();
+
+    // oh this won't work. The right border gets brought in by 9 pixels in
+    // 38-column mode.
+    colCode.fill(state.borderColor);
+    return;
   }
 
   for (let pixel = 0; pixel < 8; pixel++) {
@@ -655,20 +612,73 @@ function get8Pixels(xc, y) {
       if (!state.sprites[dominantSprite].behind || !mask[pixel]) {
 
         if (config.scopeSprites) {
-          color[pixel] = highlightPalettes[dominantSprite][spriteCol];
+          debug[pixel] = dominantSprite;
         }
         else if (config.scopeCollision && isAnySprColPix) {
-          color[pixel] = highlightPalettes[0][spriteCol];
-        }
-        else {
-          color[pixel] = defaultPalette[spriteCol];
+          debug[pixel] = 1;
         }
 
+        colCode[pixel] = spriteCol;
       }
     }
   }
+}
 
-  return color;
+function colCodeAndDebugToRgb(colCode, debug) {
+  if (config.scopeBackground) {
+    return colCode.map(
+      (colCode, index) => {
+        const modeNum = debug[index];
+
+        return (modeNum === undefined)
+          ? grayscalePalette[colCode]
+          : highlightPalettes[modeNum][colCode]
+        ;
+      }
+    );
+  }
+
+  if (config.scopeSprites) {
+    return colCode.map(
+      (colCode, index) => {
+        const spriteNum = debug[index];
+
+        return (spriteNum === undefined)
+          ? grayscalePalette[colCode]
+          : highlightPalettes[spriteNum][colCode]
+        ;
+      }
+    );
+  }
+
+  if (config.scopeCollision) {
+    return colCode.map(
+      (colCode, index) => {
+        const code = debug[index];
+
+        if (code === 0) return highlightPalettes[3][colCode];
+        if (code === 1) return highlightPalettes[0][colCode];
+        else            return grayscalePalette    [colCode];
+      }
+    );
+  }
+
+  if (config.scopeColorRam) {
+    return colCode.map(
+      (colCode, index) => {
+        const colorRamValue = debug[index];
+
+        return (colorRamValue === undefined)
+          ? grayscalePalette [colCode]
+          : colorColorPalettes[colorRamValue][colCode]
+        ;
+      }
+    );
+  }
+
+  return colCode.map(
+    (colCode) => systemPalette[colCode]
+  );
 }
 
 function fetchNextRowOfCharMatrix() {
@@ -805,7 +815,12 @@ function tick() {
     const xc = state.cycleOfLine++;
     const y = state.lineOfRaster;
 
-    const sequence = get8Pixels(xc, y);
+    const colCodeSeq = new Array(8);
+    const   debugSeq = new Array(8);
+
+    get8Pixels(xc, y, colCodeSeq, debugSeq);
+
+    const sequence = colCodeAndDebugToRgb(colCodeSeq, debugSeq);
 
     for (let i = 0; i < sequence.length; i++) {
       
@@ -835,12 +850,10 @@ function tick() {
 
     if (state.badline) fetchNextRowOfCharMatrix();
 
-    // Load black where we don't have anything else to load. This is bad.
-    // Set it to white (0x11111111) and you'll see it bleed through in Wizball.
     if (state.cycleOfLine === 16) {
       state.bgQueuePos = 0;
-      state.bgRgbQueue .fill(0); // color code 0 = black
-      state.bgMaskQueue.fill(0);
+      state.bgColCodeQueue.fill(state.backgroundColor);
+      state.bgMaskQueue   .fill(0);
     }
 
     else if ((state.cycleOfLine >= 17) && (state.cycleOfLine < 57)) {
@@ -1198,13 +1211,20 @@ function setIgnoreSprSprCol(ignore) {
 }
 
 function setScope(key) {
+  // Turn off all the scopes
   // Not the most elegant...
   for (let i in config) {
     if (/^scope/.test(i)) {
       config[i] = false;
     }
   }
-  
+
+  // Flush out the debug instrumentation for background pixels: they're a
+  // queue, so we wouldn't want data meant for the previous scope to be fed to
+  // the new one.
+  state.bgDebugQueue.fill();
+
+  // Turn on the one scope requested
   if (key) config[key] = true;
 }
 
@@ -1221,6 +1241,10 @@ function serialize() {
       stateCopy[key][i] = state[key][i];
     }
   }
+
+  // The background debug info is scope-specific per-pixel instrumentation,
+  // so is not part of the serializable state.
+  delete stateCopy.bgDebugQueue;
 
   return JSON.stringify(stateCopy);
 }
@@ -1239,4 +1263,8 @@ function deserialize(json) {
 
     state[key] = arr;
   }
+
+  // The background debug info was removed for the serialization and must be
+  // recreated.
+  state.bgDebugQueue = new Array(8);
 }
