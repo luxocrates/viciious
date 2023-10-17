@@ -14,7 +14,7 @@ module.exports = [
     entry:   "./src/entry/web-dev.js",
     devtool: "inline-source-map",
     devServer: {
-      contentBase: "./dist/web-dev",
+      static: "./dist/web-dev",
     },
     plugins: [
       new HtmlWebpackPlugin({
